@@ -4,6 +4,7 @@ import lk.ijse.dep.app.business.Converter;
 import lk.ijse.dep.app.business.custom.ManageItemsBO;
 import lk.ijse.dep.app.dao.DAOFactory;
 import lk.ijse.dep.app.dao.custom.CustomerDAO;
+import lk.ijse.dep.app.dao.custom.ItemDAO;
 import lk.ijse.dep.app.dto.CustomerDTO;
 import lk.ijse.dep.app.dto.ItemDTO;
 import lk.ijse.dep.app.util.HibernateUtil;
@@ -13,10 +14,10 @@ import java.util.List;
 
 public class ManageItemsBOImpl implements ManageItemsBO {
 
-    private CustomerDAO customerDAO;
+    private ItemDAO itemDAO;
 
     public ManageItemsBOImpl() {
-        customerDAO = DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.CUSTOMER);
+        itemDAO = DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.CUSTOMER);
     }
 
 
@@ -24,9 +25,9 @@ public class ManageItemsBOImpl implements ManageItemsBO {
     public List<ItemDTO> getItems() throws Exception {
         Session mySession = HibernateUtil.getSessionFactory().openSession();
         try(Session session = mySession){
-            customerDAO.setSession(session);
+            itemDAO.setSession(session);
             session.beginTransaction();
-            List<CustomerDTO> customerDTOS = customerDAO.findAll().map(Converter::<CustomerDTO>getDTOList).get();
+            List<ItemDTO> customerDTOS = itemDAO.findAll().map(Converter::<ItemDTO>getDTOList).get();
             session.getTransaction().commit();
             return customerDTOS;
         }catch(Exception ex){
@@ -39,9 +40,9 @@ public class ManageItemsBOImpl implements ManageItemsBO {
     public void createItem(ItemDTO dto) throws Exception {
         Session mySession = HibernateUtil.getSessionFactory().openSession();
         try(Session session = mySession){
-            customerDAO.setSession(session);
+            itemDAO.setSession(session);
             session.beginTransaction();
-            customerDAO.save(Converter.getEntity(dto));
+            itemDAO.save(Converter.getEntity(dto));
             session.getTransaction().commit();
         }catch(Exception ex){
             mySession.getTransaction().rollback();
@@ -53,9 +54,9 @@ public class ManageItemsBOImpl implements ManageItemsBO {
     public void updateItem(ItemDTO dto) throws Exception {
         Session mySession = HibernateUtil.getSessionFactory().openSession();
         try(Session session = mySession){
-            customerDAO.setSession(session);
+            itemDAO.setSession(session);
             session.beginTransaction();
-            customerDAO.update(Converter.getEntity(dto));
+            itemDAO.update(Converter.getEntity(dto));
             session.getTransaction().commit();
         }catch(Exception ex){
             mySession.getTransaction().rollback();
@@ -67,9 +68,9 @@ public class ManageItemsBOImpl implements ManageItemsBO {
     public void deleteItem(String code) throws Exception {
         Session mySession = HibernateUtil.getSessionFactory().openSession();
         try(Session session = mySession){
-            customerDAO.setSession(session);
+            itemDAO.setSession(session);
             session.beginTransaction();
-            customerDAO.delete(customerID);
+            itemDAO.delete(code);
             session.getTransaction().commit();
         }catch(Exception ex){
             mySession.getTransaction().rollback();
@@ -81,11 +82,11 @@ public class ManageItemsBOImpl implements ManageItemsBO {
     public ItemDTO findItem(String itemCode) throws Exception {
         Session mySession = HibernateUtil.getSessionFactory().openSession();
         try(Session session = mySession){
-            customerDAO.setSession(session);
+            itemDAO.setSession(session);
             session.beginTransaction();
-            CustomerDTO customerDTO = customerDAO.find(id).map(Converter::<CustomerDTO>getDTO).orElse(null);
+            ItemDTO itemDTO = itemDAO.find(itemCode).map(Converter::<ItemDTO>getDTO).orElse(null);
             session.getTransaction().commit();
-            return customerDTO;
+            return itemDTO;
         }catch(Exception ex){
             mySession.getTransaction().rollback();
             throw ex;
